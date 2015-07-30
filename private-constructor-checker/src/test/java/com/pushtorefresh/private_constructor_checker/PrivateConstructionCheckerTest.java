@@ -8,23 +8,6 @@ import static org.junit.Assert.fail;
 
 public class PrivateConstructionCheckerTest {
 
-    @Test
-    public void builderShouldPreventSettingExceptionMessageWithoutExceptionType() {
-        try {
-            PrivateConstructorChecker
-                    .forClass(Object.class)
-                    .expectedExceptionMessage("test message")
-                    .check();
-
-            fail();
-        } catch (IllegalStateException expected) {
-            assertEquals(
-                    "You can not set expected exception message without expected exception type",
-                    expected.getMessage()
-            );
-        }
-    }
-
     static class ClassWithoutDefaultConstructor {
         private ClassWithoutDefaultConstructor(String someParam) {
         }
@@ -135,6 +118,14 @@ public class PrivateConstructionCheckerTest {
                 .expectedTypeOfException(IllegalStateException.class)
                 .expectedExceptionMessage("test exception")
                 .check();
+    }
+
+    @Test
+    public void shouldCheckThatConstructorThrowsExceptionWithExpectedMessageButWithoutExpectedExceptionType() {
+        PrivateConstructorChecker
+                .forClass(ClassWithConstructorThatThrowsException.class)
+                .expectedExceptionMessage("test exception")
+                .check(); // without checking exception's type
     }
 
     @Test
