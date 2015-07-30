@@ -1,3 +1,14 @@
+buildscript {
+    dependencies {
+        classpath 'com.google.collections:google-collections:1.0' // For Jacoco Coverage Plugin
+        classpath 'com.palantir:jacoco-coverage:0.2.0'
+    }
+
+    repositories {
+        jcenter()
+    }
+}
+
 allprojects {
     repositories {
         jcenter()
