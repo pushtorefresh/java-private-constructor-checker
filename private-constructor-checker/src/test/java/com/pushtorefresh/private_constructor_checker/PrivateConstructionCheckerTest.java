@@ -3,7 +3,6 @@ package com.pushtorefresh.private_constructor_checker;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class PrivateConstructionCheckerTest {
@@ -14,20 +13,18 @@ public class PrivateConstructionCheckerTest {
     }
 
     @Test
-    public void shouldThrowExceptionIfClassDoesNotHaveDeclaredConstructors() {
+    public void shouldThrowExceptionIfClassHasNonDefaultConstructor() {
         try {
             PrivateConstructorChecker
                     .forClass(ClassWithoutDefaultConstructor.class)
                     .check();
 
             fail();
-        } catch (RuntimeException expected) {
+        } catch (AssertionError expected) {
             assertEquals(
-                    "Can not get default declared constructor for class = " + ClassWithoutDefaultConstructor.class,
+                    "Class has non-default constructor with some parameters",
                     expected.getMessage()
             );
-
-            assertTrue(expected.getCause() instanceof NoSuchMethodException);
         }
     }
 
@@ -173,6 +170,48 @@ public class PrivateConstructionCheckerTest {
             fail();
         } catch (IllegalStateException expected) {
             assertEquals("No exception was expected", expected.getMessage());
+        }
+    }
+
+    static class ClassWith2Constructors {
+        // This is good constructor for the checker
+        private ClassWith2Constructors() {
+
+        }
+
+        // This is bad constructor
+        private ClassWith2Constructors(String str) {
+
+        }
+    }
+
+    @Test
+    public void shouldThrowExceptionBecauseClassHasMoreThanOneConstructor() {
+        try {
+            PrivateConstructorChecker
+                    .forClass(ClassWith2Constructors.class)
+                    .check();
+
+            fail();
+        } catch (AssertionError expected) {
+            assertEquals("Class has more than one constructor", expected.getMessage());
+        }
+    }
+
+    static class ClassWithoutDeclaredConstructor {
+
+    }
+
+    @Test
+    public void shouldThrowExceptionBecauseClassDoesNotHaveDeclaredConstructors() {
+        try {
+            PrivateConstructorChecker
+                    .forClass(ClassWithoutDeclaredConstructor.class)
+                    .check();
+
+            fail();
+        } catch (AssertionError expected) {
+            assertEquals("Constructor must be private", expected.getMessage());
         }
     }
 }
