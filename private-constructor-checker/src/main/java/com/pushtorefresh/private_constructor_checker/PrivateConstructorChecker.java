@@ -43,11 +43,6 @@ public class PrivateConstructorChecker<T> {
         }
 
         public void check() {
-            if (expectedExceptionMessage != null && expectedTypeOfException == null) {
-                throw new IllegalStateException("You can not set expected exception message " +
-                        "without expected exception type");
-            }
-
             new PrivateConstructorChecker<T>(
                     clazz,
                     expectedTypeOfException,
@@ -89,22 +84,20 @@ public class PrivateConstructorChecker<T> {
             final Throwable cause = e.getCause();
 
             // It's okay case if we expect some exception from this constructor
-            if (expectedTypeOfException != null) {
-                if (!expectedTypeOfException.equals(cause.getClass())) {
+            if (expectedTypeOfException != null || expectedExceptionMessage != null) {
+                if (expectedTypeOfException != null && !expectedTypeOfException.equals(cause.getClass())) {
                     throw new IllegalStateException("Expected exception of type = "
                             + expectedTypeOfException + ", but was exception of type = "
                             + e.getCause().getClass()
                     );
                 }
 
-                if (expectedExceptionMessage != null) {
-                    if (!expectedExceptionMessage.equals(cause.getMessage())) {
-                        throw new IllegalStateException("Expected exception message = '"
-                                + expectedExceptionMessage + "', but was = '"
-                                + cause.getMessage() + "'",
-                                e.getCause()
-                        );
-                    }
+                if (expectedExceptionMessage != null && !expectedExceptionMessage.equals(cause.getMessage())) {
+                    throw new IllegalStateException("Expected exception message = '"
+                            + expectedExceptionMessage + "', but was = '"
+                            + cause.getMessage() + "'",
+                            e.getCause()
+                    );
                 }
 
                 // Everything is okay
