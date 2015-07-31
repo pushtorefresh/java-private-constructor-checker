@@ -3,7 +3,11 @@ sudo: false
 
 
 language: java
-jdk: oraclejdk8
+
+jdk: 
+  - oraclejdk7
+  - oraclejdk8
+  - openjdk7
 
 script:
   - sh ci.sh
