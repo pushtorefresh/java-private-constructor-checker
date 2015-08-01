@@ -56,15 +56,16 @@ public class PrivateConstructorChecker<T> {
     }
 
     public void check() {
-        Constructor constructor;
+        final Constructor<?>[] constructors = clazz.getDeclaredConstructors();
 
-        try {
-            constructor = clazz.getDeclaredConstructor();
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException("Can not get default declared constructor for class = "
-                    + clazz,
-                    e
-            );
+        if (constructors.length > 1) {
+            throw new AssertionError("Class has more than one constructor");
+        }
+
+        final Constructor<?> constructor = constructors[0];
+
+        if (constructor.getParameterTypes().length > 0) {
+            throw new AssertionError("Class has non-default constructor with some parameters");
         }
 
         constructor.setAccessible(true);
