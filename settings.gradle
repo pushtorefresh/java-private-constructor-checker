@@ -1,1 +1,1 @@
-include ':private-constructor-checker'
+include ':checker'
