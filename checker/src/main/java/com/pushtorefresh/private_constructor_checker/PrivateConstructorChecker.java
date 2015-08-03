@@ -32,16 +32,46 @@ public class PrivateConstructorChecker<T> {
             this.clazz = clazz;
         }
 
+        /**
+         * Sets the expected type of exception that must be thrown by the constructor of required class.
+         * <p>
+         * If you don't want to check exception message, you can set just type of the exception.
+         *
+         * @param expectedTypeOfException type of the exception that must be thrown by the constructor
+         *                                of required class, should not be {@code null}.
+         * @return builder.
+         */
         public Builder<T> expectedTypeOfException(Class<? extends Throwable> expectedTypeOfException) {
+            if (expectedTypeOfException == null) {
+                throw new IllegalArgumentException("expectedTypeOfException can not be null");
+            }
+
             this.expectedTypeOfException = expectedTypeOfException;
             return this;
         }
 
+        /**
+         * Sets the expected message of the exception that must be thrown by the constructor of required class.
+         * <p>
+         * If you don't want to check the type of the exception, you can set just a message.
+         *
+         * @param expectedExceptionMessage message of the exception that must be thrown by the constructor
+         *                                 of required class, should not be {@code null}.
+         * @return builder.
+         */
         public Builder<T> expectedExceptionMessage(String expectedExceptionMessage) {
+            if (expectedExceptionMessage == null) {
+                throw new IllegalArgumentException("expectedExceptionMessage can not be null");
+            }
+
             this.expectedExceptionMessage = expectedExceptionMessage;
             return this;
         }
 
+        /**
+         * Runs the check which will assert that required class has one private constructor
+         * which throws or not throws exception.
+         */
         public void check() {
             new PrivateConstructorChecker<T>(
                     clazz,
@@ -51,10 +81,22 @@ public class PrivateConstructorChecker<T> {
         }
     }
 
+    /**
+     * Creates instance of {@link com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker.Builder}.
+     *
+     * @param clazz class that needs to be checked.
+     * @param <T>   type of the class.
+     * @return {@link com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker.Builder} which will prepare
+     * check of the passed class.
+     */
     public static <T> Builder<T> forClass(Class<T> clazz) {
         return new Builder<T>(clazz);
     }
 
+    /**
+     * Runs the check which will assert that required class has one private constructor
+     * which throws or not throws exception.
+     */
     public void check() {
         final Constructor<?>[] constructors = clazz.getDeclaredConstructors();
 

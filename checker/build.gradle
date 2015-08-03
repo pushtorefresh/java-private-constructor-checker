@@ -28,3 +28,5 @@ jacocoCoverage {
 dependencies {
     testCompile libraries.junit
 }
+
+apply from: '../gradle/publish-java-lib.gradle'

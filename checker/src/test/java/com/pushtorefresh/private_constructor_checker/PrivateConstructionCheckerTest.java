@@ -7,6 +7,32 @@ import static org.junit.Assert.fail;
 
 public class PrivateConstructionCheckerTest {
 
+    @Test
+    public void builderShouldThrowExceptionIfNullWasPassedAsExpectedTypeOfException() {
+        try {
+            PrivateConstructorChecker
+                    .forClass(Object.class)
+                    .expectedTypeOfException(null);
+
+            fail();
+        } catch (IllegalArgumentException expected) {
+            assertEquals("expectedTypeOfException can not be null", expected.getMessage());
+        }
+    }
+
+    @Test
+    public void builderShouldThrowExceptionIfNullWasPassedAsExpectedExceptionMessage() {
+        try {
+            PrivateConstructorChecker
+                    .forClass(Object.class)
+                    .expectedExceptionMessage(null);
+
+            fail();
+        } catch (IllegalArgumentException expected) {
+            assertEquals("expectedExceptionMessage can not be null", expected.getMessage());
+        }
+    }
+
     static class ClassWithoutDefaultConstructor {
         private ClassWithoutDefaultConstructor(String someParam) {
         }
