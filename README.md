@@ -71,7 +71,7 @@ And that's not even full code that you'll have to write, you also need to check 
 public void constructorMustBePrivateAndThrowException() {
   PrivateConstructorChecker
     .forClass(Checks.class)
-    .expectedExceptionType(IllegalStateException.class)
+    .expectedTypeOfException(IllegalStateException.class)
     .expectedExceptionMessage("No instances please!")
     .check();
 }
