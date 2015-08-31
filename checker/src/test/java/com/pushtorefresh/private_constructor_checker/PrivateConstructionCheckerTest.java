@@ -33,6 +33,45 @@ public class PrivateConstructionCheckerTest {
         }
     }
 
+    @Test
+    public void builderShouldThrowExceptionIfNullWasPassedAsClass() {
+        try {
+            PrivateConstructorChecker
+                    .forClass(null)
+                    .check();
+
+            fail();
+        } catch (IllegalArgumentException expected) {
+            assertEquals("class can not be null", expected.getMessage());
+        }
+    }
+
+    @Test
+    public void builderShouldThrowExceptionIfNullWasPassedAsClasses() {
+        try {
+            PrivateConstructorChecker
+                    .forClasses(null)
+                    .check();
+
+            fail();
+        } catch (IllegalArgumentException expected) {
+            assertEquals("classes can not be null or empty", expected.getMessage());
+        }
+    }
+
+    @Test
+    public void builderShouldThrowExceptionIfNullWasPassedAsOneOfClasses() {
+        try {
+            PrivateConstructorChecker
+                    .forClasses(ClassWithPrivateConstructor.class, null)
+                    .check();
+
+            fail();
+        } catch (IllegalArgumentException expected) {
+            assertEquals("class can not be null", expected.getMessage());
+        }
+    }
+
     static class ClassWithoutDefaultConstructor {
         private ClassWithoutDefaultConstructor(String someParam) {
         }
@@ -48,7 +87,7 @@ public class PrivateConstructionCheckerTest {
             fail();
         } catch (AssertionError expected) {
             assertEquals(
-                    "Class has non-default constructor with some parameters",
+                    ClassWithoutDefaultConstructor.class + " has non-default constructor with some parameters",
                     expected.getMessage()
             );
         }
@@ -80,7 +119,7 @@ public class PrivateConstructionCheckerTest {
 
             fail();
         } catch (AssertionError expected) {
-            assertEquals("Constructor must be private", expected.getMessage());
+            assertEquals("Constructor of " + ClassWithDefaultProtectedConstructor.class + " must be private", expected.getMessage());
         }
     }
 
@@ -98,7 +137,7 @@ public class PrivateConstructionCheckerTest {
 
             fail();
         } catch (AssertionError expected) {
-            assertEquals("Constructor must be private", expected.getMessage());
+            assertEquals("Constructor of " + ClassWithProtectedConstructor.class + " must be private", expected.getMessage());
         }
     }
 
@@ -116,7 +155,7 @@ public class PrivateConstructionCheckerTest {
 
             fail();
         } catch (AssertionError expected) {
-            assertEquals("Constructor must be private", expected.getMessage());
+            assertEquals("Constructor of " + ClassWithPublicConstructor.class + " must be private", expected.getMessage());
         }
     }
 
@@ -161,7 +200,7 @@ public class PrivateConstructionCheckerTest {
 
             fail();
         } catch (IllegalStateException expected) {
-            assertEquals("Expected exception of type = class java.lang.IllegalArgumentException, " +
+            assertEquals("For " + ClassWithConstructorThatThrowsException.class + " expected exception of type = class java.lang.IllegalArgumentException, " +
                             "but was exception of type = class java.lang.IllegalStateException",
                     expected.getMessage()
             );
@@ -179,7 +218,7 @@ public class PrivateConstructionCheckerTest {
 
             fail();
         } catch (IllegalStateException expected) {
-            assertEquals("Expected exception message = 'lol, not something that you've expected?', " +
+            assertEquals("For " + ClassWithConstructorThatThrowsException.class + " expected exception message = 'lol, not something that you've expected?', " +
                             "but was = 'test exception'",
                     expected.getMessage()
             );
@@ -195,7 +234,7 @@ public class PrivateConstructionCheckerTest {
 
             fail();
         } catch (IllegalStateException expected) {
-            assertEquals("No exception was expected", expected.getMessage());
+            assertEquals("For " + ClassWithConstructorThatThrowsException.class + " no exception was expected", expected.getMessage());
         }
     }
 
@@ -220,7 +259,7 @@ public class PrivateConstructionCheckerTest {
 
             fail();
         } catch (AssertionError expected) {
-            assertEquals("Class has more than one constructor", expected.getMessage());
+            assertEquals(ClassWith2Constructors.class + " has more than one constructor", expected.getMessage());
         }
     }
 
@@ -237,7 +276,38 @@ public class PrivateConstructionCheckerTest {
 
             fail();
         } catch (AssertionError expected) {
-            assertEquals("Constructor must be private", expected.getMessage());
+            assertEquals("Constructor of " + ClassWithoutDeclaredConstructor.class + " must be private", expected.getMessage());
+        }
+    }
+
+    static class AnotherClassWithConstructorThatThrowsException {
+        private AnotherClassWithConstructorThatThrowsException() {
+            throw new IllegalStateException("test exception");
+        }
+    }
+
+    @Test
+    public void shouldCheckMultipleThatConstructorThrowsExceptionWithExpectedMessage() {
+        PrivateConstructorChecker
+                .forClasses(ClassWithConstructorThatThrowsException.class, AnotherClassWithConstructorThatThrowsException.class)
+                .expectedTypeOfException(IllegalStateException.class)
+                .expectedExceptionMessage("test exception")
+                .check();
+    }
+
+    @Test
+    public void shouldThrowExceptionIfOneOfClassesHasNonDefaultConstructor() {
+        try {
+            PrivateConstructorChecker
+                    .forClasses(ClassWithPrivateConstructor.class, ClassWithoutDefaultConstructor.class)
+                    .check();
+
+            fail();
+        } catch (AssertionError expected) {
+            assertEquals(
+                    ClassWithoutDefaultConstructor.class + " has non-default constructor with some parameters",
+                    expected.getMessage()
+            );
         }
     }
 }
