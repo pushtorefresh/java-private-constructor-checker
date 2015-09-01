@@ -70,7 +70,7 @@ And that's not even full code that you'll have to write, you also need to check 
 @Test
 public void constructorMustBePrivateAndThrowException() {
   PrivateConstructorChecker
-    .forClass(Checks.class)
+    .forClass(Checks.class) // Or you can use forClasses() and check multiple classes!
     .expectedTypeOfException(IllegalStateException.class)
     .expectedExceptionMessage("No instances please!")
     .check();
@@ -90,7 +90,7 @@ What `PrivateConstructorChecker` does:
 
 **Gradle**:
 ```groovy
-testCompile 'com.pushtorefresh.java-private-constructor-checker:checker:1.0.0'
+testCompile 'com.pushtorefresh.java-private-constructor-checker:checker:1.1.0'
 ```
 
 **Maven**:
@@ -98,7 +98,7 @@ testCompile 'com.pushtorefresh.java-private-constructor-checker:checker:1.0.0'
 <dependency>
     <groupId>com.pushtorefresh.java-private-constructor-checker</groupId>
     <artifactId>checker</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
