@@ -44,6 +44,14 @@ public class PrivateConstructionCheckerTest {
     }
 
     @Test
+    public void builderShouldThrowExceptionIfEmptyArrayWasPassedAsClasses() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("classes can not be null or empty");
+        PrivateConstructorChecker
+                .forClasses(new Class[0]);
+    }
+
+    @Test
     public void builderShouldThrowExceptionIfNullWasPassedAsOneOfClasses() {
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("class can not be null");
