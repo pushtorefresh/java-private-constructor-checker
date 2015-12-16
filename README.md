@@ -5,7 +5,7 @@ It means, that **you need to test** even private constructors of classes that mu
 
 **Q**: Why would I want to test that constructor is private and that it throws exception??
 
-**A**: Because if you not the only developer in the project — others may change this (make constructor public, etc) and you may miss this on the code review because you are human).
+**A**: Because if you are not the only developer in the project — others may change this (make constructor public, etc) and you may miss this on the code review because you are human).
 
 **A2**: Because if you want to have as max code coverage as possible — you need to test even such unreacheable code.
 
@@ -17,13 +17,13 @@ class Checks {
   private Checks() {
     throw new IllegalStateException("No instances please!");
   }
-  
+
   public static void checkNotNull(Object ref, String message) {
     if (ref == null) {
       throw new AssertionError(message);
     }
   }
-  
+
   // other methods
 }
 ```
@@ -51,7 +51,7 @@ Okay, we can not just write a test for private constructor, we need reflection!
 public void constructorMustBePrivateAndThrowException() {
   Constructor<?> constructor = Checks.class.getConstructor();
   constructor.setAccessible(true);
-  
+
   try {
     constructor.newInstance();
     fail("constructor must throw exception");
