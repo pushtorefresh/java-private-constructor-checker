@@ -164,7 +164,7 @@ public class PrivateConstructionCheckerTest {
 
     @Test
     public void shouldThrowExceptionBecauseTypeOfExpectedExceptionDoesNotMatch() {
-        PrivateConstructorChecker.Builder builder = PrivateConstructorChecker
+        PrivateConstructorChecker.ExceptionCheckable builder = PrivateConstructorChecker
                 .forClass(ClassWithConstructorThatThrowsException.class)
                 .expectedTypeOfException(IllegalArgumentException.class); // Incorrect type
 
@@ -176,7 +176,7 @@ public class PrivateConstructionCheckerTest {
 
     @Test
     public void shouldThrowExceptionBecauseExpectedMessageDoesNotMatch() {
-        PrivateConstructorChecker.Builder builder =PrivateConstructorChecker
+        PrivateConstructorChecker.ExceptionCheckable builder =PrivateConstructorChecker
                 .forClass(ClassWithConstructorThatThrowsException.class)
                 .expectedTypeOfException(IllegalStateException.class) // Correct type
                 .expectedExceptionMessage("lol, not something that you've expected?"); // Incorrect message
@@ -256,5 +256,141 @@ public class PrivateConstructionCheckerTest {
         expectedException.expect(AssertionError.class);
         expectedException.expectMessage(ClassWithoutDefaultConstructor.class + " has non-default constructor with some parameters");
         builder.check();
+    }
+
+    static class ClassWithPrivateStringConstructor {
+        private ClassWithPrivateStringConstructor(String string) {
+
+        }
+    }
+
+    @Test
+    public void shouldCheckPrivateConstructorMatchesParameters() {
+        PrivateConstructorChecker
+                .forClass(ClassWithPrivateStringConstructor.class)
+                .expectedWithParameters(String.class)
+                .check();
+    }
+
+    @Test
+    public void shouldCheckDefaultPrivateConstructorMatchesParameters() {
+        PrivateConstructorChecker
+                .forClass(ClassWithPrivateConstructor.class)
+                .expectedWithParameters()
+                .check();
+    }
+
+    @Test
+    public void shouldThrowExceptionBecauseConstructorParametersDoNotMatch() {
+        final PrivateConstructorChecker.ParametersCheckable builder = PrivateConstructorChecker
+                .forClass(ClassWithPrivateStringConstructor.class)
+                .expectedWithParameters(int.class);
+
+        expectedException.expect(AssertionError.class);
+        expectedException.expectMessage("Expected constructor with parameters (int) but found constructor with parameters (String)");
+        builder.check();
+    }
+
+    static class ClassWithPrivateStringStringIntConstructor {
+        private ClassWithPrivateStringStringIntConstructor(String string, String str, int value) {
+
+        }
+    }
+
+    @Test
+    public void shouldThrowExceptionBecauseOneConstructorParametersDoesNotMatch() {
+        final PrivateConstructorChecker.ParametersCheckable builder = PrivateConstructorChecker
+                .forClass(ClassWithPrivateStringStringIntConstructor.class)
+                .expectedWithParameters(String.class, String.class, String.class);
+
+        expectedException.expect(AssertionError.class);
+        expectedException.expectMessage("Expected constructor with parameters (String, String, String) but found constructor with parameters (String, String, int)");
+        builder.check();
+    }
+
+    static class AnotherClassWithPrivateStringConstructor {
+        private AnotherClassWithPrivateStringConstructor(String string) {
+
+        }
+    }
+
+    @Test
+    public void shouldCheckPrivateConstructorMatchesParametersForClasses() {
+        PrivateConstructorChecker
+                .forClasses(ClassWithPrivateStringConstructor.class, AnotherClassWithPrivateStringConstructor.class)
+                .expectedWithParameters(String.class)
+                .check();
+    }
+
+    static class ClassWithProtectedStringConstructor {
+        protected ClassWithProtectedStringConstructor(String string) {
+
+        }
+    }
+
+    @Test
+    public void shouldThrowExceptionBecauseConstructorHasProtectedModifierWhenExceptingParameters() {
+        final PrivateConstructorChecker.ParametersCheckable builder = PrivateConstructorChecker
+                .forClass(ClassWithProtectedStringConstructor.class)
+                .expectedWithParameters(String.class);
+
+        expectedException.expect(AssertionError.class);
+        expectedException.expectMessage("Constructor of " + ClassWithProtectedStringConstructor.class + " must be private");
+        builder.check();
+    }
+
+    static class ClassWithPublicStringConstructor {
+        public ClassWithPublicStringConstructor(String string) {
+
+        }
+    }
+
+    @Test
+    public void shouldThrowExceptionBecauseConstructorHasPublicModifierWhenExceptingParameters() {
+        final PrivateConstructorChecker.ParametersCheckable builder = PrivateConstructorChecker
+                .forClass(ClassWithPublicStringConstructor.class)
+                .expectedWithParameters(String.class);
+
+        expectedException.expect(AssertionError.class);
+        expectedException.expectMessage("Constructor of " + ClassWithPublicStringConstructor.class + " must be private");
+        builder.check();
+    }
+
+    static class ClassWithDefaultStringConstructor {
+        ClassWithDefaultStringConstructor(String string) {
+
+        }
+    }
+
+    @Test
+    public void shouldThrowExceptionBecauseConstructorHasDefaultModifierWhenExceptingParameters() {
+        final PrivateConstructorChecker.ParametersCheckable builder = PrivateConstructorChecker
+                .forClass(ClassWithDefaultStringConstructor.class)
+                .expectedWithParameters(String.class);
+
+        expectedException.expect(AssertionError.class);
+        expectedException.expectMessage("Constructor of " + ClassWithDefaultStringConstructor.class + " must be private");
+        builder.check();
+    }
+
+    @Test
+    public void shouldThrowExceptionIfMoreThanOneConstructorExistsWhenUsingExpectWithParameters() {
+        final PrivateConstructorChecker.ParametersCheckable builder = PrivateConstructorChecker
+                .forClass(ClassWith2Constructors.class)
+                .expectedWithParameters(String.class);
+
+        expectedException.expect(AssertionError.class);
+        expectedException.expectMessage(ClassWith2Constructors.class + " has more than one constructor");
+        builder.check();
+    }
+
+    @Test
+    public void builderShouldThrowExceptionIfNullWasPassedAsExpectedParameters() {
+        final PrivateConstructorChecker.ParametersCheckable builder = PrivateConstructorChecker
+                .forClass(ClassWithPrivateConstructor.class);
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("expectedParameters can not be null");
+        builder.expectedWithParameters(null);
     }
 }
