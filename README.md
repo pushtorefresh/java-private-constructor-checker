@@ -90,7 +90,7 @@ What `PrivateConstructorChecker` does:
 
 **Gradle**:
 ```groovy
-testCompile 'com.pushtorefresh.java-private-constructor-checker:checker:1.1.0'
+testCompile 'com.pushtorefresh.java-private-constructor-checker:checker:1.2.0'
 ```
 
 **Maven**:
@@ -98,7 +98,7 @@ testCompile 'com.pushtorefresh.java-private-constructor-checker:checker:1.1.0'
 <dependency>
     <groupId>com.pushtorefresh.java-private-constructor-checker</groupId>
     <artifactId>checker</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 
